@@ -1,0 +1,162 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <!-- Ensure proper scaling on all mobile devices -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <!-- Prevent iOS from auto-detecting phone numbers etc -->
+  <meta name="format-detection" content="telephone=no" />
+  <!-- Prevent iOS Safari caching stale audio -->
+  <meta http-equiv="Cache-Control" content="no-cache" />
+  <title>Family Audio Player</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+
+<body>
+
+  <!-- ══════════════════════════════════════════════════
+       FULL-SCREEN BACKGROUND WRAPPER
+       Covers 100% of the viewport. Provides the
+       letterbox / pillarbox background colour.
+  ══════════════════════════════════════════════════ -->
+  <div class="app-wrapper">
+
+    <!-- ══════════════════════════════════════════════════
+         ASPECT-LOCKED CANVAS (the "painting")
+         All UI lives inside here. Scales uniformly.
+         Interaction prompt overlay is a child of this.
+    ══════════════════════════════════════════════════ -->
+    <div class="app-canvas">
+
+      <!-- ── Mobile / Autoplay Interaction Gate Overlay ──
+           Shown on first load. User must tap before audio
+           can play — required by mobile browser policy.
+           Dismissed on first interaction. -->
+      <div class="interaction-prompt-overlay" id="interaction-prompt">
+        <div class="interaction-prompt-icon">🎙️</div>
+        <div class="interaction-prompt-text">
+          Tap anywhere to begin<br/>Family Audio Player
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════
+           HEADER REGION
+           Title + recording counter + theme toggle
+      ══════════════════════════════════════════════ -->
+      <header class="app-header">
+
+        <!-- App title -->
+        <span class="app-title">Holy Bible</span>
+
+        <!-- Current recording counter e.g. "0042 / 1189" -->
+        <span class="recording-counter" id="recording-counter">0001 / 1189</span>
+
+        <!-- Dark / Light theme toggle -->
+        <button
+          class="theme-toggle-button control-button"
+          id="theme-toggle-button"
+          aria-label="Toggle dark and light theme"
+          title="Toggle theme">
+          ☀️
+        </button>
+
+      </header>
+
+      <!-- ══════════════════════════════════════════════
+           HIDDEN AUDIO ELEMENT
+           Controlled entirely by app.js.
+           preload="none" avoids loading all 1189 files.
+           No autoplay attribute — mobile policy.
+      ══════════════════════════════════════════════ -->
+      <audio
+        id="audio-element"
+        class="audio-element"
+        preload="none">
+        <!-- src is set dynamically by app.js -->
+        Your browser does not support the audio element.
+      </audio>
+
+      <!-- ══════════════════════════════════════════════
+           DESCRIPTION REGION (main content — scrollable)
+           This is the primary focus of each recording.
+           Text cascades naturally and scrolls if long.
+      ══════════════════════════════════════════════ -->
+      <main class="description-region">
+
+        <!-- Recording title (e.g. "Recording 0042") -->
+        <h2 class="description-recording-title" id="description-title"></h2>
+
+        <!-- Description body — loaded dynamically from data/text/desc-XXXX.js -->
+        <p class="description-body-text" id="description-body"></p>
+
+      </main>
+
+      <!-- ══════════════════════════════════════════════
+           CONTROLS FOOTER REGION
+           Progress bar + navigation row
+      ══════════════════════════════════════════════ -->
+      <footer class="controls-region">
+
+        <!-- Progress bar (click to seek) -->
+        <div
+          class="progress-bar-container"
+          id="progress-bar-container"
+          role="progressbar"
+          aria-label="Audio progress">
+          <div class="progress-bar-fill" id="progress-bar-fill"></div>
+        </div>
+
+        <!-- Navigation + action buttons row -->
+        <div class="controls-row">
+
+          <!-- Previous recording button -->
+          <button
+            class="control-button"
+            id="prev-button"
+            aria-label="Previous recording"
+            title="Previous">
+            ⬅️
+          </button>
+
+          <!-- Play / Pause toggle button -->
+          <button
+            class="control-button"
+            id="play-pause-button"
+            aria-label="Play or pause"
+            title="Play / Pause">
+            ▶️
+          </button>
+
+          <!-- Download current audio clip button -->
+          <a
+            class="control-button"
+            id="download-button"
+            href="./audio/audio-0001.mp3"
+            download="audio-0001.mp3"
+            aria-label="Download this recording"
+            title="Download">
+            ⬇️
+          </a>
+
+          <!-- Next recording button -->
+          <button
+            class="control-button"
+            id="next-button"
+            aria-label="Next recording"
+            title="Next">
+            ➡️
+          </button>
+
+        </div>
+
+      </footer>
+
+    </div><!-- /.app-canvas -->
+
+  </div><!-- /.app-wrapper -->
+
+  <!-- app.js loaded last so DOM is ready -->
+  <script src="./app.js"></script>
+
+</body>
+</html>
