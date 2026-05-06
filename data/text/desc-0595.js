@@ -1,0 +1,1 @@
+onDescriptionLoaded("Purihin nʼyo at parangalan ang Panginoon, kayong lahat ng mamamayan ng mga bansa!\n\nDahil napakadakila ng pag-ibig sa atin ng Panginoon, at ang kanyang katapatan ay walang hanggan. Purihin ninyo ang Panginoon!");
