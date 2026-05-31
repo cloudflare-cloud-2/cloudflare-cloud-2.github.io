@@ -1,0 +1,286 @@
+/* ============================================================
+   FAMILY AUDIO PLAYER — styles.css
+   All sizing derived from --base-spacing (vmin).
+   Two-layer layout: full-screen bg + aspect-locked canvas.
+   Dark / Light themes toggled via body.theme-light class.
+   So no matter the screen size the view ratio and all its elements
+   maintain consistent proportions, like a painting that can be zoomed in and out of thats always portrait. So on a desktop view it will look like a portrate painting with the blank sides ignored, and on a mobile view it will look like a painting that's been zoomed in and fits the phone screens portrait.
+   ============================================================ */
+
+/* ── Reset ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Design Scale Tokens ── */
+:root {
+  --base-spacing:    2.2vmin;
+  --golden-ratio:    1.618;
+
+  --spacing-small:   calc(var(--base-spacing) * 0.618);
+  --spacing-medium:  var(--base-spacing);
+  --spacing-large:   calc(var(--base-spacing) * var(--golden-ratio));
+  --spacing-xlarge:  calc(var(--base-spacing) * var(--golden-ratio) * var(--golden-ratio));
+
+  --font-size-small:  calc(var(--base-spacing) * 0.75);
+  --font-size-medium: calc(var(--base-spacing) * 1.0);
+  --font-size-large:  calc(var(--base-spacing) * 1.4);
+  --font-size-xlarge: calc(var(--base-spacing) * 2.2);
+
+  --border-radius:   calc(var(--base-spacing) * 0.6);
+  --tap-target:      calc(var(--base-spacing) * 5);
+  --icon-size:       calc(var(--base-spacing) * 3);
+}
+
+/* ── Dark Theme (default) ── */
+body {
+  --bg-outer:        #080808;
+  --bg-canvas:       #111111;
+  --bg-description:  #181818;
+  --bg-button:       #1e1e1e;
+  --bg-button-hover: #2c2c2c;
+  --bg-button-active:#383838;
+  --color-text:      #e6e6e6;
+  --color-muted:     #777777;
+  --color-accent:    #5aabff;
+  --color-border:    #2a2a2a;
+  --color-shadow:    rgba(0,0,0,0.7);
+}
+
+/* ── Light Theme ── */
+body.theme-light {
+  --bg-outer:        #e8e8e8;
+  --bg-canvas:       #ffffff;
+  --bg-description:  #f5f5f5;
+  --bg-button:       #ebebeb;
+  --bg-button-hover: #dcdcdc;
+  --bg-button-active:#cccccc;
+  --color-text:      #1a1a1a;
+  --color-muted:     #666666;
+  --color-accent:    #1a6fc4;
+  --color-border:    #cccccc;
+  --color-shadow:    rgba(0,0,0,0.15);
+}
+
+/* ── Full-screen background wrapper ── */
+.app-wrapper {
+  position: fixed;
+  inset: 0;
+  background-color: var(--bg-outer);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+  /* Prevent mobile pull-to-refresh interrupting playback */
+  overscroll-behavior: none;
+}
+
+/* ── Aspect-locked canvas (the "painting") ── */
+/* Portrait: narrower than tall. Width drives scaling. */
+.app-canvas {
+  position: relative;
+  width:      min(94vw, calc(100dvh * 0.56));
+  height:     min(94dvh, calc(94vw / 0.56));
+  background-color: var(--bg-canvas);
+  border-radius: var(--border-radius);
+  border: var(--base-spacing) solid transparent;
+  border-width: calc(var(--base-spacing) * 0.1);
+  border-color: var(--color-border);
+  box-shadow: 0 calc(var(--base-spacing) * 0.8) calc(var(--base-spacing) * 3) var(--color-shadow);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* ── Header region ── */
+.app-header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: calc(var(--spacing-medium) * 0.9) calc(var(--spacing-large) * 0.9);
+  border-bottom: calc(var(--base-spacing) * 0.08) solid var(--color-border);
+}
+
+.app-title {
+  font-size: calc(var(--font-size-large) * 0.75);
+  color: var(--color-text);
+  font-weight: normal;
+  letter-spacing: 0.05em;
+}
+
+.recording-counter {
+  font-size: calc(var(--font-size-small) * 0.75);
+  color: var(--color-muted);
+}
+
+/* ── Theme toggle button ── */
+.theme-toggle-button {
+  background: var(--bg-button);
+  border: calc(var(--base-spacing) * 0.08) solid var(--color-border);
+  border-radius: var(--border-radius);
+  color: var(--color-text);
+  font-size: calc(var(--font-size-medium) * 0.75) !important;
+  cursor: pointer;
+  width:  calc(var(--tap-target) * 0.75) !important;
+  height: calc(var(--tap-target) * 0.75 * 0.7) !important;
+  min-width:  unset !important;
+  min-height: unset !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+  /* Prevent tap highlight on mobile */
+  -webkit-tap-highlight-color: transparent;
+}
+
+.theme-toggle-button:hover  { background: var(--bg-button-hover); }
+.theme-toggle-button:active { background: var(--bg-button-active); }
+
+/* ── Audio element (hidden visually, controlled by JS) ── */
+.audio-element {
+  display: none;
+}
+
+/* ── Description text region (main content, scrollable) ── */
+.description-region {
+  flex: 1 1 0;
+  overflow-y: auto;
+  padding: var(--spacing-large);
+  background-color: var(--bg-description);
+  /* Scrollbar styling */
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+.description-region::-webkit-scrollbar {
+  width: calc(var(--base-spacing) * 0.4);
+}
+.description-region::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: var(--border-radius);
+}
+.description-region::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ── Recording title inside description ── */
+.description-recording-title {
+  font-size: var(--font-size-large);
+  color: var(--color-accent);
+  margin-bottom: var(--spacing-medium);
+  font-weight: normal;
+}
+
+/* ── Description body text ── */
+.description-body-text {
+  font-size: calc(var(--font-size-medium) * 2);
+  color: var(--color-text);
+  line-height: calc(var(--font-size-medium) * 2 * var(--golden-ratio));
+  white-space: pre-wrap;
+}
+
+/* ── Controls footer region ── */
+.controls-region {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(var(--spacing-medium) * 0.75);
+  padding: calc(var(--spacing-large) * 0.75) calc(var(--spacing-large) * 0.75);
+  border-top: calc(var(--base-spacing) * 0.08) solid var(--color-border);
+}
+
+/* ── Progress bar ── */
+.progress-bar-container {
+  width: 100%;
+  height: calc(var(--base-spacing) * 0.375);
+  background: var(--color-border);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--color-accent);
+  border-radius: var(--border-radius);
+  transition: width 0.25s linear;
+  pointer-events: none;
+}
+
+/* ── Navigation + controls row ── */
+.controls-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-small);
+}
+
+/* ── All control buttons ── */
+.control-button {
+  background: var(--bg-button);
+  border: calc(var(--base-spacing) * 0.08) solid var(--color-border);
+  border-radius: var(--border-radius);
+  color: var(--color-text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Minimum tap target for mobile */
+  min-width:  calc(var(--tap-target) * 0.75);
+  min-height: calc(var(--tap-target) * 0.75);
+  font-size:  calc(var(--icon-size) * 0.75);
+  transition: background-color 0.15s ease, transform 0.1s ease;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.control-button:hover  { background: var(--bg-button-hover); }
+.control-button:active {
+  background: var(--bg-button-active);
+  transform: scale(0.95);
+}
+
+/* Disabled state (e.g. prev on first, next on last) */
+.control-button:disabled {
+  opacity: 0.3;
+  cursor: default;
+  transform: none;
+}
+
+/* ── Mobile-first interaction hint ── */
+/* Shown when user has not yet interacted (to avoid autoplay block) */
+.interaction-prompt-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.82);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-large);
+  z-index: 10;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+}
+
+.interaction-prompt-overlay.hidden {
+  display: none;
+}
+
+.interaction-prompt-icon {
+  font-size: calc(var(--base-spacing) * 5);
+}
+
+.interaction-prompt-text {
+  font-size: var(--font-size-large);
+  color: #ffffff;
+  text-align: center;
+  padding: 0 var(--spacing-large);
+}
