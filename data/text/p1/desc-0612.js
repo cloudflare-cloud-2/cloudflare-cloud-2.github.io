@@ -1,0 +1,1 @@
+onDescriptionLoaded("1 Purihin ang Panginoon, lahat kayong mga naglilingkod sa kanyang templo kung gabi.\n\n2 Itaas ninyo ang inyong mga kamay kapag mananalangin kayo sa loob ng templo, at purihin ninyo ang Panginoon.\n\n3 Pagpalain sana kayo ng Panginoon na nasa Zion na siyang lumikha ng langit at ng lupa.");
